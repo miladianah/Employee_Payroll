@@ -1,8 +1,9 @@
 const db = require('../config/db');
 
-// Get all salaries
+// Get all salary records
 const getAllSalaries = async (req, res) => {
     try {
+        // Fetch all records from the salary table
         const [rows] = await db.query('SELECT * FROM salary');
         res.json(rows);
     } catch (error) {
@@ -10,41 +11,48 @@ const getAllSalaries = async (req, res) => {
     }
 };
 
-// Create salary record
+// Create a new salary record
 const createSalary = async (req, res) => {
     const { grossSalary, totalDeduction, netSalary, monthOfPayment, employeeNumber } = req.body;
+
     try {
-        const sql = `INSERT INTO salary (grossSalary, totalDeduction, netSalary, monthOfPayment, employeeNumber) 
-                     VALUES (?, ?, ?, ?, ?)`;
-        await db.query(sql, [grossSalary, totalDeduction, netSalary, monthOfPayment, employeeNumber]);
-        res.status(201).json({ message: 'Salary record added' });
+        // Insert a new salary record
+        await db.query(
+            `INSERT INTO salary (grossSalary, totalDeduction, netSalary, monthOfPayment, employeeNumber) 
+             VALUES (?, ?, ?, ?, ?)`,
+            [grossSalary, totalDeduction, netSalary, monthOfPayment, employeeNumber]
+        );
+        res.status(201).json({ message: 'Salary record added successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// NEW: Update salary record
+// Update an existing salary record by ID
 const updateSalary = async (req, res) => {
-    const { id } = req.params; // salaryId from URL
+    const { id } = req.params; // Get the salaryId from the URL
     const { grossSalary, totalDeduction, netSalary, monthOfPayment, employeeNumber } = req.body;
 
     try {
-        const sql = `UPDATE salary 
-                     SET grossSalary = ?, totalDeduction = ?, netSalary = ?, monthOfPayment = ?, employeeNumber = ? 
-                     WHERE salaryId = ?`;
-        await db.query(sql, [grossSalary, totalDeduction, netSalary, monthOfPayment, employeeNumber, id]);
+        await db.query(
+            `UPDATE salary 
+             SET grossSalary = ?, totalDeduction = ?, netSalary = ?, monthOfPayment = ?, employeeNumber = ? 
+             WHERE salaryId = ?`,
+            [grossSalary, totalDeduction, netSalary, monthOfPayment, employeeNumber, id]
+        );
         res.json({ message: 'Salary record updated successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// Delete salary record
+// Delete a salary record by ID
 const deleteSalary = async (req, res) => {
-    const { id } = req.params; // salaryId from URL
+    const { id } = req.params; // Get the salaryId from the URL
+
     try {
         await db.query('DELETE FROM salary WHERE salaryId = ?', [id]);
-        res.json({ message: 'Salary record deleted' });
+        res.json({ message: 'Salary record deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

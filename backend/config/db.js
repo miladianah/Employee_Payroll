@@ -1,6 +1,9 @@
 const mysql = require('mysql2');
+
+// Load environment variables from .env file
 require('dotenv').config();
 
+// Create a connection pool (manages multiple database connections)
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -11,7 +14,7 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-// Convert to promise-based pool for async/await
+// Convert the pool to use Promises so we can use async/await
 const promisePool = pool.promise();
 
 module.exports = promisePool;
